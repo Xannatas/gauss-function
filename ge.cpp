@@ -1,7 +1,5 @@
 /* Simple linear system solver, from https://martin-thoma.com/solving-linear-equations-with-gaussian-elimination/#c-code */
 
-/* Some modifications by me.  Albert Schueller*/
-
 /* Isaiah Banta , Austin Betschart */
 
 /* R-4.7 , R-4.10 , R-4.13 , R-4.21, R-4.24 , R-4.29 */
@@ -11,18 +9,20 @@
 #include <iostream>
 #include <fstream>
 #include <cmath> // provides pow()
-#include <sys/time.h> // provides gettimeofday() (gives milliseconds)
+#include <sys/time.h> // provides gettimeofday() (in milliseconds)
 #include <vector> // provides the vector class
 #include <cstdlib> // provides the rand() function
 #include <ctime> // provides the time() function
 #include <algorithm> // provides the sort() function
 using namespace std;
 
-/*
-My Above and Beyond is my main function, where I put the whole Gauss function in a for loop and then input each of the recieved values into a CSV file which I can then import into Google Sheets to get an immediate reading on my values. This allowed me to make a much more accurate graph because I didn't have to worry about typing so many values in small increments of 50.I have a separate file that also records the log base 2 of the matrix size, and the elapsed time.*/
+
 void print(vector< vector<double> >);
 vector<double> gauss(vector< vector<double> >);
 
+//Solves a system of n equations (increasing) and times how long it takes
+//Uses vector data structure
+//Inputs values into a CSV file and also the logarithmic values into another CSV file
 int main() {
   int n, i, j, r;
   double initial, end, elapsed;
@@ -32,7 +32,8 @@ int main() {
   myfile.open("values.txt");
   myotherfile.open("log_values.txt");
  
- n = 2500;
+  n = 2500;
+	
 for(double G=0;G<n+1;G=G+50) { 
   // Number of equations
 
@@ -50,26 +51,28 @@ for(double G=0;G<n+1;G=G+50) {
 
   // Calculate solution
   vector<double> x(G);
+	
   // Call time function here..
-
   gettimeofday(&tp,NULL);
   initial= tp.tv_sec*1000+tp.tv_usec/1000;
 
   x = gauss(A);
 
+  // Call time function again.. 
   gettimeofday(&tp,NULL);
   end=tp.tv_sec*1000+tp.tv_usec/1000;
 
   elapsed= (end - initial);
   cout << "The total time elapsed for a system of: "<<G<<" equations is: "<<elapsed <<"."<< endl;
  
- 
+ // Input values into CSV files
  myfile << G << "," << elapsed << endl;
  myotherfile << log2(G) << "," << log2(elapsed) << endl; 
 }
 myfile.close();
 myotherfile.close();
 }
+
 void print(vector< vector<double> > A) {
   int n = A.size();
   for (int i=0; i<n; i++) {
